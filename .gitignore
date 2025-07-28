@@ -1,0 +1,37 @@
+# Ambiente virtual
+.chatbot-pdf/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Configurações do VS Code
+.vscode/
+
+# Arquivos de log e temporários
+*.log
+*.tmp
+*.swp
+
+# Arquivos de ambiente (variáveis secretas)
+.env
+
+# Diretórios de build/distribuição
+build/
+dist/
+*.egg-info/
+
+# Testes
+.coverage
+htmlcov/
+
+# Banco de dados SQLite
+*.sqlite3
+
+# Pasta de dados temporários
+data/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
