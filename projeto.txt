@@ -1,0 +1,395 @@
+Bom dia! Vamos montar um projeto que consiste em uma API que pode ser acessada por um link que abre uma janela com vários botões, sendo que cada botão terá uma finalidade especifica. O primeiro será um chatbot que lerá um formulário de petição em pdf (chatbot-fp1.py);  o segundo será um chatbot que lerá um arquivo em pdf (RPP - Relatórios de Revisão Periodica); o terceiro será um web-scrapping que buscará dados específicos (resultados de inspeções realizadas por estas instituições) de websites do FDA, do EMA e do Health Canadá.
+
+Bom dia, Carlos! Esse projeto tem tudo para ser extremamente útil e multifuncional — unir automação de leitura de PDFs com inteligência artificial e coleta de dados web é uma combinação poderosa. Vamos estruturar os blocos principais da aplicação para que tudo se encaixe com fluidez. Aqui vai uma proposta de arquitetura inicial:
+
+🧩 Estrutura Geral do Projeto
+🔗 Interface Web (Janela com Botões)
+- Desenvolvida com Flask ou FastAPI com frontend em HTML + JavaScript (ex: Bootstrap).
+- Cada botão aciona uma rota específica na API que chama um módulo correspondente.
+[Formulário de Petição] → chatbot-fp1.py  
+[RPP - Relatórios de Revisão] → chatbot-rpp.py  
+[Inspeções FDA/EMA/HC] → webscraping-inspecoes.py
+
+
+
+🤖 Botão 1: Chatbot para Formulário de Petição (PDF)
+Função:
+- Ler e interpretar formulários de petição em PDF.
+- Gerar respostas inteligentes ou extrair informações estruturadas.
+Componentes:
+- PDF parser (ex: PyMuPDF ou pdfplumber)
+- Modelo de linguagem (ex: OpenAI ou Hugging Face para entendimento do texto)
+- Interface de chat tipo chatbot (streamlit/chat-ui com backend Python)
+
+📊 Botão 2: Chatbot para Relatório de Revisão Periódica (RPP)
+Função:
+- Ler arquivos RPP em PDF.
+- Realizar perguntas e respostas interativas sobre conteúdo do relatório.
+Componentes:
+- Mesmo stack do Botão 1, com possíveis adaptações na lógica de extração:
+- Extração de datas, conclusões, indicadores.
+
+🌐 Botão 3: Web Scraping FDA / EMA / Health Canada
+Função:
+- Buscar dados sobre inspeções de medicamentos ou fabricantes nos sites oficiais.
+- Compilar e apresentar dados de forma organizada.
+Fontes:
+- FDA Inspection Database
+- EMA GCP & GMP Inspection Reports
+- Health Canada Inspection Tracker
+Ferramentas sugeridas:
+- BeautifulSoup + requests para scraping simples.
+- Selenium se for necessário interagir com páginas dinâmicas.
+- pandas para organizar e exportar os dados.
+
+🗂 Organização dos Arquivos
+/ProjetoAPI
+│
+├── api.py                # Arquivo principal da API
+├── chatbot-fp1.py        # Chatbot do formulário de petição
+├── chatbot-rpp.py        # Chatbot dos relatórios RPP
+├── webscraping-inspecoes.py # Scraper FDA/EMA/HC
+├── static/               # CSS, JS, ícones
+├── templates/            # HTML dos botões e interface
+└── uploads/              # PDFs recebidos
+
+
+
+Se quiser, podemos começar escrevendo um dos módulos juntos. O que você prefere começar: o chatbot dos formulários ou o web scraping internacional?
+
+----------------------------------------------------------------------
+Claro, Carlos! Aqui estão os links diretos para os respectivos sistemas de inspeção de cada entidade reguladora:
+
+🧪 FDA (Food and Drug Administration – EUA)
+- 🔗 FDA Inspection Classification Database
+- 🔗 FDA Inspections Dashboard
+Esses portais permitem buscar inspeções por empresa, tipo de produto, classificação (NAI, VAI, OAI) e visualizar relatórios como o Form 483.
+
+🇪🇺 EMA (European Medicines Agency – União Europeia)
+- 🔗 EMA GCP Inspection Procedures
+- 🔗 EMA Annual Report – Inspections and Compliance
+A EMA coordena inspeções de GCP e GMP em colaboração com autoridades nacionais. Os relatórios são publicados em forma de métricas e documentos técnicos.
+
+🍁 Health Canada (Canadá)
+- 🔗 Health Canada Inspection Tracker
+- 🔗 Drug & Health Product Inspections Database
+O tracker canadense mostra ações regulatórias em andamento, como quarentenas voluntárias, restrições de importação e recalls.
+
+Se quiser, posso te ajudar a montar o scraper para cada um desses sites. Qual deles você quer começar a explorar?
+
+FDA Inspection Resources
+| Portal | Descrição | Link | 
+| Inspection Classification Database | Mostra classificações finais de inspeções (NAI, VAI, OAI) por área de projeto. Ideal para entender o status de conformidade de fabricantes. | Acesse aqui | 
+| FDA Inspections Dashboard | Interface visual com filtros por tipo de produto, país, ano fiscal, e acesso a Formulários 483 publicados. | Explore o dashboard | 
+
+
+
+Esses sites são atualizados semanalmente e oferecem dados públicos sobre inspeções realizadas em estabelecimentos regulados. Você pode buscar por nome da empresa, país, tipo de produto, e até baixar datasets.
+Se quiser, posso te ajudar a começar o código de scraping para um deles. Quer que eu monte um exemplo com requests e BeautifulSoup para o Dashboard?
+
+
+ Exemplo de Web Scraping com Selenium (FDA Dashboard)
+✅ Pré-requisitos:
+Antes de tudo, certifique-se de instalar os pacotes:
+pip install selenium pandas
+
+
+E tenha o ChromeDriver compatível com sua versão do Chrome.
+
+📜 Código Python Inicial
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+import pandas as pd
+import time
+
+# Caminho do ChromeDriver
+service = Service("CAMINHO/para/chromedriver.exe")
+
+# Configuração do navegador
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")  # Executa sem abrir janela
+driver = webdriver.Chrome(service=service, options=options)
+
+# Acessa o Dashboard
+url = "https://datadashboard.fda.gov/oii/cd/inspections.htm"
+driver.get(url)
+time.sleep(5)  # Aguarda carregamento da página
+
+# Exemplo: Captura títulos das seções de filtros
+titles = driver.find_elements(By.CLASS_NAME, "card-title")
+for t in titles:
+    print("Título:", t.text)
+
+# Exemplo: Captura uma tabela (se presente)
+try:
+    table = driver.find_element(By.ID, "example-table")  # ID fictício
+    rows = table.find_elements(By.TAG_NAME, "tr")
+    for row in rows:
+        cols = row.find_elements(By.TAG_NAME, "td")
+        data = [col.text for col in cols]
+        print(data)
+except:
+    print("Tabela não localizada ou conteúdo dinâmico ainda não carregado.")
+
+driver.quit()
+
+
+
+🧠 Dica:
+Como o conteúdo é carregado dinamicamente, você pode usar também o driver.execute_script() para capturar informações JavaScript ou interagir com botões/filtros.
+Se quiser, posso adaptar esse script para extrair inspeções por país ou mostrar a classificação (OAI, VAI, NAI) diretamente. Quer que avancemos nisso?
+
+ Etapa 1: Simulação de Interação + Coleta de Dados
+Aqui está um exemplo mais elaborado para:
+- Abrir o FDA Dashboard
+- Selecionar filtros (como país)
+- Coletar dados da tabela de inspeções
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support impo
+
+-----------------------------------------------------------------------
+BUSCA NO SITE DO FDA POR NOME OU FEI 
+
+Perfeito! Vamos montar um módulo que aceita o nome da empresa ou o número FEI como entrada e retorna os dados disponíveis no portal FDA Firm/Supplier Evaluation Resources.
+Como o site é altamente dinâmico, usaremos novamente o Selenium para simular a busca.
+
+🧪 Script de Busca por Empresa ou FEI no FDA Dashboard
+🔧 Pré-requisitos
+pip install selenium pandas
+
+
+
+📜 Código Python Base
+ 
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
+import time
+
+# ← Atualize com seu caminho local do chromedriver
+service = Service("CAMINHO/para/chromedriver.exe")
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+
+# Inicializa navegador
+driver = webdriver.Chrome(service=service, options=options)
+wait = WebDriverWait(driver, 15)
+
+# URL da ferramenta FDA
+url = "https://datadashboard.fda.gov/oii/fd/fser.htm"
+driver.get(url)
+time.sleep(5)
+
+# --- Entrar com nome da empresa ou FEI ---
+empresa_ou_fei = "Pfizer"  # ← substitua pelo nome ou número FEI desejado
+
+# Localiza campo de busca e insere valor
+try:
+    campo_busca = wait.until(EC.presence_of_element_located((By.ID, "searchInput")))  # ← confirmar o ID real
+    campo_busca.clear()
+    campo_busca.send_keys(empresa_ou_fei)
+    time.sleep(2)
+
+    botao_buscar = driver.find_element(By.ID, "searchButton")  # ← confirmar o ID real
+    botao_buscar.click()
+    time.sleep(8)
+
+    # Captura resultados da tabela
+    resultados = driver.find_elements(By.CLASS_NAME, "result-row")  # ← ajustar para estrutura real
+    for item in resultados:
+        print(item.text)
+
+except Exception as e:
+    print("Erro ao buscar empresa:", e)
+
+driver.quit()
+
+
+ Adaptações Futuras
+Se quiser transformar isso em uma API para seu projeto, podemos:
+- Receber os dados via POST de formulário HTML.
+- Retornar os dados como JSON.
+- Incorporar cache para buscas frequentes.
+- Tratar erros e buscas inválidas.
+Quer que a gente transforme esse script em uma função reutilizável dentro da sua API Flask ou FastAPI? Posso te ajudar com isso também!
+
+========================================================================
+BUSCA NO SITE DO EMA
+
+Perfeito, Carlos! Vamos focar exclusivamente no portal do EMA para buscar dados de autorizações MIA (Manufacturing and Importation Authorisation) usando nome da empresa, país e/ou número MIA.
+
+🌍 Portal Oficial do EMA para MIA
+🔗 EudraGMDP – Search MIA
+Esse é o site onde você pode realizar buscas detalhadas por:
+- Nome da empresa (com uso de coringas como *Pharma*)
+- País de emissão
+- Número MIA
+- Cidade, código postal, DUNS Number, OMS Organisation ID
+- Tipo de operação autorizada (ex: fabricação, importação)
+- Legal Basis of Authorisation (ex: Art. 40 da Diretiva 2001/83/EC)
+
+🛠️ Como funciona a busca
+- Você pode usar asteriscos como coringas:
+- *Inc. → empresas que terminam com “Inc.”
+- Pharmaco* → empresas que começam com “Pharmaco”
+- Se não preencher nenhum campo, o sistema retorna todas as MIAs do país selecionado.
+- É possível incluir MIAs retiradas ou suspensas marcando as caixas correspondentes.
+- Os resultados podem ser exportados em Excel diretamente da interface.
+
+💡 Próximo passo
+Posso montar um script com Selenium que:
+- Aceita como entrada o nome da empresa, país ou número MIA
+- Realiza a busca no site
+- Extrai os resultados da tabela
+- Retorna como DataFrame ou JSON para sua API
+Quer que eu comece esse módulo agora? Posso te entregar um exemplo funcional rapidinho! 😄
+
+Script de Busca de MIA no Portal da EMA
+🚀 Pré-requisitos
+Instale os pacotes:
+pip install selenium pandas
+
+
+Garanta também que o ChromeDriver esteja instalado e compatível com sua versão do Chrome.
+
+🧪 Código Python Inicial
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import pandas as pd
+import time
+
+# Parâmetros de busca
+empresa = "Pfizer"
+pais = "Germany"
+numero_mia = ""  # Se quiser buscar pelo número, insira aqui
+
+# Caminho do ChromeDriver
+service = Service("CAMINHO/para/chromedriver.exe")
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+
+# Inicializa navegador
+driver = webdriver.Chrome(service=service, options=options)
+
+# Acessa o site
+url = "https://eudragmdp.ema.europa.eu/inspections/mia/searchMIA.do"
+driver.get(url)
+time.sleep(3)
+
+# Preenche o campo de nome da empresa
+driver.find_element(By.NAME, "companyName").send_keys(empresa)
+
+# Seleciona o país
+select_country = Select(driver.find_element(By.NAME, "country"))
+select_country.select_by_visible_text(pais)
+
+# Número MIA (opcional)
+if numero_mia:
+    driver.find_element(By.NAME, "miaNumber").send_keys(numero_mia)
+
+# Clica no botão de busca
+driver.find_element(By.NAME, "submit").click()
+time.sleep(5)
+
+# Extrai dados da tabela
+rows = driver.find_elements(By.CSS_SELECTOR, "table.reportTable > tbody > tr")
+
+dados = []
+for row in rows[1:]:  # Ignora cabeçalho
+    cols = row.find_elements(By.TAG_NAME, "td")
+    dados.append([col.text.strip() for col in cols])
+
+# Cria DataFrame
+colunas = ["Company Name", "MIA Number", "Address", "City", "Postal Code", "Country", "Type of Authorisation", "Operations"]
+df = pd.DataFrame(dados, columns=colunas)
+print(df.head())
+
+driver.quit()
+
+
+
+🧠 Dicas Futuras
+- Podemos transformar esse script em um endpoint de API que retorna JSON com os dados da MIA.
+- É possível expandir para capturar também documentos PDF de inspeção vinculados, se disponíveis.
+- Podemos incluir filtros adicionais (como tipo de operação autorizada ou status do MIA).
+Quer que a gente transforme isso em um módulo oficial da sua API com entrada via formulário web? Posso seguir com isso e integrar os dados na interface que mencionou! 🧱📡
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import pandas as pd
+import time
+
+# Parâmetros de busca
+empresa = "Pfizer"
+pais = "Germany"
+numero_mia = ""  # Se quiser buscar pelo número, insira aqui
+
+# Caminho do ChromeDriver
+service = Service("CAMINHO/para/chromedriver.exe")
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+
+# Inicializa navegador
+driver = webdriver.Chrome(service=service, options=options)
+
+# Acessa o site
+url = "https://eudragmdp.ema.europa.eu/inspections/mia/searchMIA.do"
+driver.get(url)
+time.sleep(3)
+
+# Preenche o campo de nome da empresa
+driver.find_element(By.NAME, "companyName").send_keys(empresa)
+
+# Seleciona o país
+select_country = Select(driver.find_element(By.NAME, "country"))
+select_country.select_by_visible_text(pais)
+
+# Número MIA (opcional)
+if numero_mia:
+    driver.find_element(By.NAME, "miaNumber").send_keys(numero_mia)
+
+# Clica no botão de busca
+driver.find_element(By.NAME, "submit").click()
+time.sleep(5)
+
+# Extrai dados da tabela
+rows = driver.find_elements(By.CSS_SELECTOR, "table.reportTable > tbody > tr")
+
+dados = []
+for row in rows[1:]:  # Ignora cabeçalho
+    cols = row.find_elements(By.TAG_NAME, "td")
+    dados.append([col.text.strip() for col in cols])
+
+# Cria DataFrame
+colunas = ["Company Name", "MIA Number", "Address", "City", "Postal Code", "Country", "Type of Authorisation", "Operations"]
+df = pd.DataFrame(dados, columns=colunas)
+print(df.head())
+
+driver.quit()
+
+Dicas Futuras
+- Podemos transformar esse script em um endpoint de API que retorna JSON com os dados da MIA.
+- É possível expandir para capturar também documentos PDF de inspeção vinculados, se disponíveis.
+- Podemos incluir filtros adicionais (como tipo de operação autorizada ou status do MIA).
+Quer que a gente transforme isso em um módulo oficial da sua API com entrada via formulário web? Posso seguir com isso e integrar os dados na interface que mencionou! 🧱📡
+
+
+
+COMMITS - 30/07/2025
+
+- Alteração do nome da pasta de chatbot-pdf para AnalisePeticoes, o nome do projeto.
+- Estruturação das pastas que comporação o projeto 
+- Subpastas criadas: static/, templates/ e uploads/
+- arquivos criados: api.py, chatbot-fp1.py, chatbot-rpp.py e ebscraping-hii.py (hii - histórico inspeçoes internacionais)
