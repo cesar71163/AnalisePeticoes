@@ -385,6 +385,19 @@ Dicas Futuras
 - Podemos incluir filtros adicionais (como tipo de operação autorizada ou status do MIA).
 Quer que a gente transforme isso em um módulo oficial da sua API com entrada via formulário web? Posso seguir com isso e integrar os dados na interface que mencionou! 🧱📡
 
+/////////////////////////////////////////////////////////////////////////////////////
+
+🗂 Organização dos Arquivos
+/ProjetoAPI
+│
+├── api.py                # Arquivo principal da API
+├── chatbot-fp1.py        # Chatbot do formulário de petição
+├── chatbot-rpp.py        # Chatbot dos relatórios RPP
+├── webscraping-inspecoes.py # Scraper FDA/EMA/HC
+├── static/               # CSS, JS, ícones
+├── templates/            # HTML dos botões e interface
+└── uploads/              # PDFs recebidos
+
 
 
 COMMITS - 30/07/2025
